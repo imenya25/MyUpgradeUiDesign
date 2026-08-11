@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { supabase } from '../lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -23,6 +24,7 @@ interface User {
 export default function UsersPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -54,17 +56,17 @@ export default function UsersPage() {
       setUsers(data || []);
     } catch (err) {
       console.error('Error fetching users:', err);
-      alert('Failed to load users. Check console for details.');
+      addToast('Failed to load users. Check console for details.', 'error');
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleCreateUser(e: React.FormEvent) {
+  async function handleCreateUser(e: FormEvent) {
     e.preventDefault();
     
     if (!newEmail || !newPassword || !newFullName) {
-      alert('Please fill in all fields');
+      addToast('Please fill in all fields', 'error');
       return;
     }
 
@@ -81,7 +83,7 @@ export default function UsersPage() {
 
       if (error) throw error;
 
-      alert('User created successfully!');
+      addToast('User created successfully!', 'success');
       setShowAddModal(false);
       
       // Reset form
@@ -94,7 +96,7 @@ export default function UsersPage() {
       fetchUsers();
     } catch (err: any) {
       console.error('Creation error:', err);
-      alert(`Error creating user: ${err.message || 'Unknown error'}`);
+      addToast(`Error creating user: ${err.message || 'Unknown error'}`, 'error');
     } finally {
       setIsCreating(false);
     }
@@ -103,37 +105,37 @@ export default function UsersPage() {
   if (loading) return <div className="p-8">Loading users...</div>;
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">User Management</h1>
-        <Button onClick={() => setShowAddModal(true)}>
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h1 className="text-2xl sm:text-3xl font-bold break-words w-full">User Management</h1>
+        <Button onClick={() => setShowAddModal(true)} className="w-full sm:w-auto whitespace-nowrap">
           + Add New User
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Users ({users.length})</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">All Users ({users.length})</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr className="text-left">
-                  <th className="p-3">Full Name</th>
-                  <th className="p-3">Email</th>
-                  <th className="p-3">Role</th>
-                  <th className="p-3">ID</th>
-                  <th className="p-3">Created</th>
+                  <th className="p-3 min-w-[120px]">Full Name</th>
+                  <th className="p-3 min-w-[180px]">Email</th>
+                  <th className="p-3 min-w-[90px]">Role</th>
+                  <th className="p-3 min-w-[100px]">ID</th>
+                  <th className="p-3 min-w-[100px]">Created</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((u) => (
                   <tr key={u.id} className="border-b hover:bg-gray-50">
-                    <td className="p-3">{u.full_name}</td>
-                    <td className="p-3">{u.email}</td>
+                    <td className="p-3 max-w-[200px] truncate" title={u.full_name}>{u.full_name}</td>
+                    <td className="p-3 max-w-[220px] truncate" title={u.email}>{u.email}</td>
                     <td className="p-3">
-                      <span className={`px-2 py-1 rounded text-xs ${
+                      <span className={`px-2 py-1 rounded text-xs whitespace-nowrap ${
                         u.role === 'admin' ? 'bg-red-100 text-red-800' :
                         u.role === 'teacher' ? 'bg-blue-100 text-blue-800' :
                         'bg-green-100 text-green-800'
@@ -141,8 +143,8 @@ export default function UsersPage() {
                         {u.role.toUpperCase()}
                       </span>
                     </td>
-                    <td className="p-3 font-mono text-xs">{u.student_id || u.teacher_id || '-'}</td>
-                    <td className="p-3 text-gray-500">{new Date(u.created_at).toLocaleDateString()}</td>
+                    <td className="p-3 font-mono text-xs truncate">{u.student_id || u.teacher_id || '-'}</td>
+                    <td className="p-3 text-gray-500 whitespace-nowrap">{new Date(u.created_at).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -156,8 +158,8 @@ export default function UsersPage() {
 
       {/* Add User Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <Card className="w-full max-w-md mx-4 my-8">
             <CardHeader>
               <CardTitle>Create New User</CardTitle>
             </CardHeader>
