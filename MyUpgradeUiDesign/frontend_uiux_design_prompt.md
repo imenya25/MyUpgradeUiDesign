@@ -1,7 +1,4 @@
-# AI Prompt: Professional Responsive Frontend & UI/UX Design
-
-Copy everything below into your AI tool of choice (Claude, v0, Cursor, etc.), then fill in the `[CONTEXT]` block with your project details before running it.
-
+# INSTRUCTION
 ---
 
 ## PROMPT
