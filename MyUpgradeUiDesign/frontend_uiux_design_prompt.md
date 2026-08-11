@@ -1,7 +1,11 @@
-# INSTRUCTION
+# AI Prompt: Professional Responsive Frontend & UI/UX Design
+
+Copy everything below into your AI tool of choice (Claude, v0, Cursor, etc.), then fill in the `[CONTEXT]` block with your project details before running it.
+
 ---
 
 ## PROMPT
+Note: Always make reference to the README.md and UI_REDESIGN_PROMPT.md
 
 You are acting as a senior Product Designer and Frontend Architect at a professional design studio. Your job is to design a **complete, production-ready frontend** for the project described below — every page, every screen state, and every interactive element — optimized for **mobile, tablet, and desktop**, following real UI/UX professional standards (not generic AI-template output).
 
